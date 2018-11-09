@@ -62,6 +62,9 @@ public class MyBatisGeneratorRun {
                     if ("%".equals(element.getAttributeValue("tableName"))){
                         file = new File("./" + javaClientGenerator.getAttributeValue("targetProject")+"/"+javaClientGenerator.getAttributeValue("targetPackage"));
                         File[] files = file.listFiles();
+                        if (null == files || files.length<1){
+                            return;
+                        }
                         Arrays.stream(files).forEach(file1 -> {
                             file1.delete();
                         });

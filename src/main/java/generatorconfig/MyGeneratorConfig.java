@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * 创建人:连磊
@@ -42,7 +43,7 @@ public class MyGeneratorConfig implements CommentGenerator {
 
     @Override
     public void addFieldComment(Field field, IntrospectedTable introspectedTable) {
-        
+
     }
 
     /**
@@ -96,7 +97,7 @@ public class MyGeneratorConfig implements CommentGenerator {
 
     @Override
     public void addGeneralMethodComment(Method method, IntrospectedTable introspectedTable) {
-        
+
     }
 
     @Override
@@ -106,11 +107,36 @@ public class MyGeneratorConfig implements CommentGenerator {
 
     @Override
     public void addComment(XmlElement xmlElement) {
-        
+
     }
 
     @Override
     public void addRootComment(XmlElement xmlElement) {
         
+    }
+
+    @Override
+    public void addGeneralMethodAnnotation(Method method, IntrospectedTable introspectedTable, Set<FullyQualifiedJavaType> set) {
+
+    }
+
+    @Override
+    public void addGeneralMethodAnnotation(Method method, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn, Set<FullyQualifiedJavaType> set) {
+
+    }
+
+    @Override
+    public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable, Set<FullyQualifiedJavaType> set) {
+
+    }
+
+    @Override
+    public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable, IntrospectedColumn introspectedColumn, Set<FullyQualifiedJavaType> set) {
+
+    }
+
+    @Override
+    public void addClassAnnotation(InnerClass innerClass, IntrospectedTable introspectedTable, Set<FullyQualifiedJavaType> set) {
+
     }
 }
