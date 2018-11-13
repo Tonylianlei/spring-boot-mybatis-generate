@@ -38,10 +38,10 @@ public class MySwagger {
                 .apiInfo(apiInfo()) 
                 .pathMapping("/")
                 .select() 
-                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller.fund"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller.user"))
                 .paths(PathSelectors.any()) 
                 .build()
-                .groupName("基金操作")
+                .groupName("用户操作")
                 ;
     }
 

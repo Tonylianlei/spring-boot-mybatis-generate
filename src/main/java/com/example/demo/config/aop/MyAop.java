@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -22,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class MyAop {
+
+    @Value("${pathUrl}")
+    private String pathURL;
 
 
     @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
@@ -45,6 +49,7 @@ public class MyAop {
     @Before("pointcut1() && pointcut()")
     public void doBefore(JoinPoint joinPoint){
         try {
+            System.out.println(pathURL);
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = attributes.getRequest();
             String targetName = joinPoint.getTarget().getClass().getName();
