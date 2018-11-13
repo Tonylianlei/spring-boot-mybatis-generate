@@ -15,7 +15,7 @@
         </commentGenerator>
         <!-- 数据库连接属性 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.2.246:3306/cq_angel"
+                        connectionURL="jdbc:mysql://39.105.8.143:3306/dagewofu?characterEncoding=utf-8"
                         userId="root"
                         password="123456">
             <property name="useInformationSchema" value="true"></property>
@@ -34,7 +34,7 @@
         <!-- 生成映射接口配置 -->
         <javaClientGenerator targetPackage="com.example.demo.bean.mapper" targetProject="src/main/java" type="XMLMAPPER" />
 
-        <table tableName="%">
+        <table tableName="%"><!-- domainObjectName="DgUser"> -->
             <!--mysql 配置 -->
             <generatedKey column="id" sqlStatement="Mysql" identity="true" />
         </table>
