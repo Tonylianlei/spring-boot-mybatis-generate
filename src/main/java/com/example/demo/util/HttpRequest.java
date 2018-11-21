@@ -3,21 +3,17 @@ package com.example.demo.util;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.scheduling.annotation.Async;
 
 /**
  * 创建人:连磊
@@ -34,7 +30,7 @@ public class HttpRequest  {
         }
         try {
             String urlNameString = url + "?" + param;
-            System.out.println(urlNameString);
+
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
@@ -102,8 +98,12 @@ public class HttpRequest  {
                         e.printStackTrace();
                     }
                     FileOutputStream fw = null;
+                    String regEx="[`!@#$%^&*()+=|{}':;',//[//].<>/?！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]";
+                    Pattern pattern = Pattern.compile(regEx);
+                    String title = pattern.matcher(jsonObject.getString("title")).replaceAll("").trim();
+
                     try {
-                        fw = new FileOutputStream(path + "/" +jsonObject.getString("title") +( count <=0 ?".jpg" : ".gif" ), false);
+                        fw = new FileOutputStream(path + "/" + title +( count <=0 ?".jpg" : ".gif" ), false);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }

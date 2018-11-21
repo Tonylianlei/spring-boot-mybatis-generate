@@ -1,7 +1,5 @@
 package com.example.demo.util;
 
-import net.sf.json.JSONObject;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -9,24 +7,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import javax.annotation.Resource;
 
 /**
  * 创建人:连磊
@@ -35,15 +26,11 @@ import javax.annotation.Resource;
  */
 public class Reptilian {
 
-    @Resource(name = "defaultThreadPool")
-    private ThreadPoolTaskExecutor executor;
+    private static String filePath = "E:\\data\\";
 
     private static String[] URL = {"新闻","网页","微信","知乎","视频","明医","英文","学术","问问","更多»","识图搜索","企业推广","","输入法","浏览器","诚聘英才","免责声明","官方微博","帮助","图说新闻"};
 
     public static void main(String[] args) throws IOException {
-        HttpClient httpClient = new DefaultHttpClient();
-
-
         String url = "http://pic.sogou.com";
         getUrl(url);
     }
@@ -60,40 +47,41 @@ public class Reptilian {
         Document document = getDocument(url);
 
         Elements select = document.select("a").attr("target","_blank");
-        String page = "&start=0&len=50";
+        String page = "&start=0&len=3";
+        //封装需要的参数
+        Map<String , String> valueList = new HashMap<>();
         for (Element el: select) {
+            //过滤部分我想要的数据地址
             long count = Arrays.stream(URL).filter(u -> u.equals(el.text())).count();
             if (count <= 0){
                 if (!"javascript:void(0)".equals(el.attr("href"))) {
                     if (!"http:".equals(el.attr("href").substring(0, 4))){
-                        /*System.out.println(el.text() + el.attr("href"));*/
+                        //解析下一层的数据信息
                         Document href = getDocument(url + el.attr("href"));
-                        writeFile("E:\\data\\"+el.text()+".txt" , href);
+                        //将需要的信息写入文件
+                        writeFile(filePath+el.text()+".txt" , href);
+                        //获取想要的信息
                         List<String> scriptValue = getScriptValue(href);
-                        File files = new File("E:\\data\\" + el.text());
+                        //创建相关的文件夹
+                        File files = new File(filePath + el.text());
                         files.mkdir();
+                        //处理信息匹配
                         for (String tal : scriptValue ) {
                             if ("全景视觉".equals(el.text())){
                                 el.text("全景");
                             }
-                            page = "category=" + URLEncoder.encode(el.text() , "GBK") + "&tag=" +  URLEncoder.encode(tal.replace("\"" , "") , "GBK") + page;
-                            JSONObject value = HttpRequest.getJSONObject(HttpRequest.sendGet("https://pic.sogou.com/pics/channel/getAllRecomPicByTag.jsp", page, "GBK"));
-                            System.out.println(value);
+                            //创建相关信息连接
+                            page = "category=" + URLEncoder.encode(el.text(), "GBK") + "&tag=" + URLEncoder.encode(tal.replace("\"", ""), "GBK") + page;
+                            //处理文件匹配
                             if ("全景".equals(el.text())){
                                 el.text("全景视觉");
                             }
-                            String fileFolder = "E:\\data\\" + el.text()+"\\" + tal.replace("\"" , "");
-                            files = new File(fileFolder);
+                            //创建相关的文件夹
+                            files = new File(filePath + el.text()+"\\" + tal.replace("\"" , ""));
                             files.mkdir();
-                            HttpRequest.getInfo(value , fileFolder);
-
-                            page = "&start=0&len=50";
-                            System.out.println("****************--------------------------------------------********************");
+                            valueList.put(page , files.getPath());
+                            page = "&start=0&len=3";
                         }
-                        //Elements script = href.select("script");
-
-                        //System.out.println(script);
-
                     }else {
                         Document href = getDocument(el.attr("href"));
                         writeFile("E:\\data\\"+el.text()+".txt" , href);
@@ -101,6 +89,10 @@ public class Reptilian {
                 }
             }
         }
+        ThreadAsyncPool threadAsyncPool = new ThreadAsyncPool();
+        ThreadPoolExecutor asyncExecutor = threadAsyncPool.getAsyncExecutor();
+        HttpRequestExecutePool httpRequestExecutePool = new HttpRequestExecutePool(valueList);
+        asyncExecutor.execute(httpRequestExecutePool);
     }
 
     /**
@@ -123,6 +115,14 @@ public class Reptilian {
         return document;
     }
 
+    /**
+     *开 发 者：连磊
+     *开发时间：2018/11/21 16:40
+     *方 法 名：writeFile
+     *传入参数：[path, document]
+     *返 回 值：void
+     *描    述：将需要的信息写到文件中，用于分析
+     **/
     public static void writeFile(String path , Document document) throws IOException {
         /*File file = new File(path);
         Writer writer = new FileWriter(file);
@@ -131,6 +131,14 @@ public class Reptilian {
         writer.close();*/
     }
 
+    /**
+     *开 发 者：连磊
+     *开发时间：2018/11/21 16:40
+     *方 法 名：getScriptValue
+     *传入参数：[document]
+     *返 回 值：java.util.List<java.lang.String>
+     *描    述：解析script中的变量。获取需要的参数
+     **/
     public static List<String> getScriptValue(Document document ){
         List<String> valueList = new ArrayList<>();
         Elements script = document.select("script");
