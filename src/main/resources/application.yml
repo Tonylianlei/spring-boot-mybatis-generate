@@ -16,4 +16,4 @@ logging:
       example:
         demo:
           bean:
-            mapper: error
+            mapper: DEBUG

@@ -1,5 +1,7 @@
 package com.example.demo.util;
 
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -10,15 +12,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import javax.annotation.Resource;
 
 /**
  * 创建人:连磊
@@ -26,6 +34,9 @@ import org.jsoup.select.Elements;
  * 描述：
  */
 public class Reptilian {
+
+    @Resource(name = "defaultThreadPool")
+    private ThreadPoolTaskExecutor executor;
 
     private static String[] URL = {"新闻","网页","微信","知乎","视频","明医","英文","学术","问问","更多»","识图搜索","企业推广","","输入法","浏览器","诚聘英才","免责声明","官方微博","帮助","图说新闻"};
 
@@ -49,17 +60,36 @@ public class Reptilian {
         Document document = getDocument(url);
 
         Elements select = document.select("a").attr("target","_blank");
+        String page = "&start=0&len=50";
         for (Element el: select) {
             long count = Arrays.stream(URL).filter(u -> u.equals(el.text())).count();
             if (count <= 0){
                 if (!"javascript:void(0)".equals(el.attr("href"))) {
                     if (!"http:".equals(el.attr("href").substring(0, 4))){
-
-                        System.out.println(el.text() + el.attr("href"));
-                        System.out.println("--------------------------------------");
+                        /*System.out.println(el.text() + el.attr("href"));*/
                         Document href = getDocument(url + el.attr("href"));
                         writeFile("E:\\data\\"+el.text()+".txt" , href);
-                        getScriptValue(href);
+                        List<String> scriptValue = getScriptValue(href);
+                        File files = new File("E:\\data\\" + el.text());
+                        files.mkdir();
+                        for (String tal : scriptValue ) {
+                            if ("全景视觉".equals(el.text())){
+                                el.text("全景");
+                            }
+                            page = "category=" + URLEncoder.encode(el.text() , "GBK") + "&tag=" +  URLEncoder.encode(tal.replace("\"" , "") , "GBK") + page;
+                            JSONObject value = HttpRequest.getJSONObject(HttpRequest.sendGet("https://pic.sogou.com/pics/channel/getAllRecomPicByTag.jsp", page, "GBK"));
+                            System.out.println(value);
+                            if ("全景".equals(el.text())){
+                                el.text("全景视觉");
+                            }
+                            String fileFolder = "E:\\data\\" + el.text()+"\\" + tal.replace("\"" , "");
+                            files = new File(fileFolder);
+                            files.mkdir();
+                            HttpRequest.getInfo(value , fileFolder);
+
+                            page = "&start=0&len=50";
+                            System.out.println("****************--------------------------------------------********************");
+                        }
                         //Elements script = href.select("script");
 
                         //System.out.println(script);
@@ -101,7 +131,7 @@ public class Reptilian {
         writer.close();*/
     }
 
-    public static void getScriptValue(Document document ){
+    public static List<String> getScriptValue(Document document ){
         List<String> valueList = new ArrayList<>();
         Elements script = document.select("script");
         for (Element element : script){
@@ -110,12 +140,12 @@ public class Reptilian {
                 if (value.contains("=")){
                     if (value.contains("jsonTag")){
                         value = value.split("=")[1].trim();
-                        value = value.substring( 1 , value.length() - 1);
+                        value = value.substring( 1 , value.length() - 2);
                         valueList = Arrays.stream(value.split(",")).collect(Collectors.toList());
-                        System.out.println(valueList);
                     }
                 }
             }
         }
+        return valueList;
     }
 }
