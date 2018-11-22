@@ -103,7 +103,7 @@ public class HttpRequest  {
                     String title = pattern.matcher(jsonObject.getString("title")).replaceAll("").trim();
 
                     try {
-                        fw = new FileOutputStream(path + "/" + title +( count <=0 ?".jpg" : ".gif" ), false);
+                        fw = new FileOutputStream(path.trim() + "/" + title +( count <=0 ?".jpg" : ".gif" ), false);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
