@@ -30,10 +30,10 @@ public class Reptilian {
 
     private static String[] URL = {"新闻","网页","微信","知乎","视频","明医","英文","学术","问问","更多»","识图搜索","企业推广","","输入法","浏览器","诚聘英才","免责声明","官方微博","帮助","图说新闻"};
 
-    public static void main(String[] args) throws IOException {
+    /*public static void main(String[] args) throws IOException {
         String url = "http://pic.sogou.com";
         getUrl(url);
-    }
+    }*/
 
     /**
      *开 发 者：连磊
@@ -44,6 +44,8 @@ public class Reptilian {
      *描    述：解析首页想要的数据
      **/
     public static void getUrl(String url) throws IOException {
+        System.out.println("******************---------------------------------------*****************");
+
         Document document = getDocument(url);
 
         Elements select = document.select("a").attr("target","_blank");

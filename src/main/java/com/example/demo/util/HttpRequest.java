@@ -3,7 +3,6 @@ package com.example.demo.util;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.json.JSONArray;
@@ -14,6 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 创建人:连磊
@@ -21,6 +22,8 @@ import org.apache.http.util.EntityUtils;
  * 描述：
  */
 public class HttpRequest  {
+
+    private static final Logger logger = LoggerFactory.getLogger(HttpRequest.class);
 
     public static String sendGet(String url, String param , String encoded) {
         String result = "";
@@ -103,6 +106,7 @@ public class HttpRequest  {
                     String title = pattern.matcher(jsonObject.getString("title")).replaceAll("").trim();
 
                     try {
+                        logger.info(path.trim() + "/" + title +( count <=0 ?".jpg" : ".gif"));
                         fw = new FileOutputStream(path.trim() + "/" + title +( count <=0 ?".jpg" : ".gif" ), false);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
