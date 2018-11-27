@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 日期: 2018/11/22. 17:49
  * 描述：
  */
-@Component
+//@Component
 public class MyInitExecute implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
