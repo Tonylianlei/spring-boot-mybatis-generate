@@ -45,4 +45,20 @@ public class MySwagger {
                 ;
     }
 
+    @Bean
+    public Docket createRestApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .genericModelSubstitutes(DeferredResult.class)
+                .useDefaultResponseMessages(false)
+                .forCodeGeneration(true)
+                .apiInfo(apiInfo())
+                .pathMapping("/")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller.user"))
+                .paths(PathSelectors.any())
+                .build()
+                .groupName("爱的发声")
+                ;
+    }
+
 }
