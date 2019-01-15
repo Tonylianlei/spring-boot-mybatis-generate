@@ -32,16 +32,16 @@ public class MySwagger {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2) 
-                .genericModelSubstitutes(DeferredResult.class) 
+                /*.genericModelSubstitutes(DeferredResult.class)
                 .useDefaultResponseMessages(false) 
-                .forCodeGeneration(true) 
+                .forCodeGeneration(true)*/
                 .apiInfo(apiInfo()) 
-                .pathMapping("/")
+                /*.pathMapping("/")*/
                 .select() 
-                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller.user"))
+                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller"))
                 .paths(PathSelectors.any()) 
                 .build()
-                .groupName("用户操作")
+                /*.groupName("用户操作")*/
                 ;
     }
 
