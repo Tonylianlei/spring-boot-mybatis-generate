@@ -37,6 +37,13 @@ public class ResultMessage<T> {
         return resultMessage;
     }
 
+    public static ResultMessage setResult(ResultCode result){
+        ResultMessage resultMessage = getInstance();
+        resultMessage.setMessage(result.getMs());
+        resultMessage.setCode(result.getCode());
+        return resultMessage;
+    }
+
     public static ResultMessage setCode(ResultCode resultCode){
         ResultMessage resultMessage = getInstance();
         resultMessage.setCode(resultCode.getCode());
